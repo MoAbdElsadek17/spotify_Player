@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشغل Spotify - تشغيل البلايليست</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1DB954 0%, #191414 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(25, 20, 20, 0.8);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: #1DB954;
+        }
+
+        .logo h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #b3b3b3;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-section, .player-section {
+            background: rgba(25, 20, 20, 0.85);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            color: #1DB954;
+        }
+
+        .section-title i {
+            font-size: 1.8rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b3b3b3;
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 15px;
+            color: #1DB954;
+            font-size: 1.2rem;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(29, 185, 84, 0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #1DB954;
+            box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: #1DB954;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            background: #1ed760;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(29, 185, 84, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .player {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .album-art {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 25px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1DB954 0%, #191414 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .album-art i {
+            font-size: 4rem;
+            color: white;
+        }
+
+        .track-info {
+            margin-bottom: 25px;
+        }
+
+        .track-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .track-artist {
+            color: #b3b3b3;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #1DB954;
+        }
+
+        .play-btn {
+            background: #1DB954;
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+        }
+
+        .play-btn:hover {
+            background: #1ed760;
+            transform: scale(1.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #1DB954;
+            width: 30%;
+            border-radius: 3px;
+            transition: width 0.1s linear;
+        }
+
+        .time {
+            display: flex;
+            justify-content: space-between;
+            color: #b3b3b3;
+            font-size: 0.9rem;
+        }
+
+        .playlist-section {
+            background: rgba(25, 20, 20, 0.85);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .playlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .playlist-items {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .playlist-items::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .playlist-items::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .playlist-items::-webkit-scrollbar-thumb {
+            background: #1DB954;
+            border-radius: 4px;
+        }
+
+        .playlist-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .playlist-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .playlist-item.active {
+            background: rgba(29, 185, 84, 0.2);
+            border-right: 4px solid #1DB954;
+        }
+
+        .item-number {
+            width: 30px;
+            text-align: center;
+            color: #b3b3b3;
+            margin-left: 15px;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .item-artist {
+            color: #b3b3b3;
+            font-size: 0.9rem;
+        }
+
+        .item-duration {
+            color: #b3b3b3;
+            margin-right: 15px;
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.2);
+            color: #f8d7da;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(29, 185, 84, 0.2);
+            color: #d4edda;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid rgba(29, 185, 84, 0.3);
+            display: none;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .volume-control i {
+            color: #1DB954;
+        }
+
+        .volume-control input {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .volume-control input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #1DB954;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #b3b3b3;
+            font-size: 0.9rem;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .spotify-embed {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .embed-title {
+            color: #1DB954;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fab fa-spotify"></i>
+                <h1>مشغل Spotify</h1>
+            </div>
+            <p class="subtitle">أدخل رابط البلايليست أو رابط Spotify لتشغيل الموسيقى</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="section-title">
+                    <i class="fas fa-link"></i>
+                    <h2>أدخل رابط Spotify</h2>
+                </div>
+                
+                <div class="input-group">
+                    <label for="spotifyUrl"><i class="fas fa-music"></i> رابط البلايليست أو الأغنية</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="spotifyUrl" placeholder="https://open.spotify.com/playlist/...">
+                        <i class="fas fa-headphones-alt"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="embedCode"><i class="fas fa-code"></i> أو كود التضمين (اختياري)</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="embedCode" placeholder="<iframe src='https://open.spotify.com/embed/...'>">
+                        <i class="fas fa-code"></i>
+                    </div>
+                </div>
+
+                <button class="btn" id="loadPlaylist">
+                    <i class="fas fa-play-circle"></i>
+                    تشغيل البلايليست
+                </button>
+
+                <!-- Messages -->
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+
+                <!-- Volume Control -->
+                <div class="volume-control">
+                    <i class="fas fa-volume-up"></i>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="70">
+                    <span id="volumeValue">70%</span>
+                </div>
+            </div>
+
+            <!-- Player Section -->
+            <div class="player-section">
+                <div class="section-title">
+                    <i class="fas fa-play-circle"></i>
+                    <h2>المشغل</h2>
+                </div>
+
+                <div class="player">
+                    <div class="album-art" id="albumArt">
+                        <i class="fab fa-spotify"></i>
+                    </div>
+
+                    <div class="track-info">
+                        <div class="track-title" id="currentTrack">اختر بلايليست</div>
+                        <div class="track-artist" id="currentArtist">ستظهر المعلومات هنا</div>
+                    </div>
+
+                    <div class="controls">
+                        <button class="control-btn" id="prevBtn">
+                            <i class="fas fa-step-backward"></i>
+                        </button>
+                        <button class="control-btn play-btn" id="playBtn">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="control-btn" id="nextBtn">
+                            <i class="fas fa-step-forward"></i>
+                        </button>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="time">
+                            <span id="currentTime">0:00</span>
+                            <span id="totalTime">0:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spotify Embed (for real playlist) -->
+                <div class="spotify-embed">
+                    <div class="embed-title">
+                        <i class="fab fa-spotify"></i> Spotify Player
+                    </div>
+                    <div id="spotifyPlayerContainer">
+                        <!-- Spotify embed will be loaded here -->
+                        <p style="color: #b3b3b3; text-align: center; padding: 20px;">
+                            <i class="fas fa-info-circle"></i> سيظهر مشغل Spotify هنا بعد إدخال الرابط
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Playlist Section -->
+        <div class="playlist-section">
+            <div class="playlist-header">
+                <div class="section-title">
+                    <i class="fas fa-list"></i>
+                    <h2>قائمة التشغيل</h2>
+                </div>
+                <button class="btn" id="shuffleBtn" style="width: auto; padding: 8px 20px;">
+                    <i class="fas fa-random"></i>
+                    خلط
+                </button>
+            </div>
+
+            <div class="playlist-items" id="playlistItems">
+                <!-- Playlist items will be loaded here -->
+                <div style="text-align: center; color: #b3b3b3; padding: 40px;">
+                    <i class="fas fa-music fa-2x" style="margin-bottom: 15px;"></i>
+                    <p>لا توجد أغاني في القائمة</p>
+                    <p style="font-size: 0.9rem;">أدخل رابط Spotify لتحميل البلايليست</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2024 مشغل Spotify | هذا الموقع غير رسمي ولا ينتمي لـ Spotify</p>
+            <p style="font-size: 0.8rem; margin-top: 10px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                هذا موقع تجريبي للموسيقى. جميع الحقوق محفوظة لأصحابها.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const spotifyUrlInput = document.getElementById('spotifyUrl');
+        const loadPlaylistBtn = document.getElementById('loadPlaylist');
+        const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+        const playlistItems = document.getElementById('playlistItems');
+        const spotifyPlayerContainer = document.getElementById('spotifyPlayerContainer');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        // Player state
+        let currentPlaylist = [];
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        let audioPlayer = null;
+
+        // Sample playlist (for demo purposes)
+        const samplePlaylist = [
+            {
+                id: 1,
+                title: "Blinding Lights",
+                artist: "The Weeknd",
+                duration: "3:22",
+                albumArt: "https://i.scdn.co/image/ab67616d00001e02a048415db06a5b6fa7ec2e1d"
+            },
+            {
+                id: 2,
+                title: "Stay",
+                artist: "The Kid LAROI, Justin Bieber",
+                duration: "2:21",
+                albumArt: "https://i.scdn.co/image/ab67616d00001e0295f754318336a07e85ec59bc"
+            },
+            {
+                id: 3,
+                title: "good 4 u",
+                artist: "Olivia Rodrigo",
+                duration: "2:58",
+                albumArt: "https://i.scdn.co/image/ab67616d00001e0238c83c8c6d4e6e8c7c65ad9c"
+            },
+            {
+                id: 4,
+                title: "Levitating",
+                artist: "Dua Lipa",
+                duration: "3:24",
+                albumArt: "https://i.scdn.co/image/ab67616d00001e02e8426b5d5a64d3b9c2c5c6a0"
+            },
+            {
+                id: 5,
+                title: "Heat Waves",
+                artist: "Glass Animals",
+                duration: "3:59",
+                albumArt: "https://i.scdn.co/image/ab67616d00001e0224f5b5c8f5c8c9c9e8d5c8f5"
+            },
+            {
+                id: 6,
+                title: "As It Was",
+                artist: "Harry Styles",
+                duration: "2:47",
+                albumArt: "https://i.scdn.co/image/ab67616d00001e028a6c7b5f5f5f5f5f5f5f5f5"
+            },
+            {
+                id: 7,
+                title: "Bad Habits",
+                artist: "Ed Sheeran",
+                duration: "3:51",
+                albumArt: "https://i.scdn.co/image/ab67616d00001e02b5c5f5f5f5f5f5f5f5f5f5f"
+            },
+            {
+                id: 8,
+                title: "Easy On Me",
+                artist: "Adele",
+                duration: "3:44",
+                albumArt: "https://i.scdn.co/image/ab67616d00001e02c5c5f5f5f5f5f5f5f5f5f5f"
+            }
+        ];
+
+        // Initialize
+        function init() {
+            // Load sample playlist for demo
+            loadSamplePlaylist();
+            
+            // Event listeners
+            loadPlaylistBtn.addEventListener('click', handleLoadPlaylist);
+            playBtn.addEventListener('click', togglePlay);
+            prevBtn.addEventListener('click', playPrev);
+            nextBtn.addEventListener('click', playNext);
+            shuffleBtn.addEventListener('click', shufflePlaylist);
+            volumeSlider.addEventListener('input', updateVolume);
+            
+            // Auto-detect Spotify URLs
+            spotifyUrlInput.addEventListener('paste', handlePaste);
+            
+            // Initialize audio player
+            initAudioPlayer();
+        }
+
+        // Handle loading playlist
+        function handleLoadPlaylist() {
+            const url = spotifyUrlInput.value.trim();
+            
+            if (!url) {
+                showError('الرجاء إدخال رابط Spotify');
+                return;
+            }
+
+            if (!isValidSpotifyUrl(url)) {
+                showError('الرجاء إدخال رابط Spotify صالح');
+                return;
+            }
+
+            // Extract playlist ID
+            const playlistId = extractPlaylistId(url);
+            
+            if (playlistId) {
+                loadSpotifyEmbed(playlistId);
+                showSuccess('تم تحميل البلايليست بنجاح!');
+                
+                // For demo: Load sample playlist
+                loadSamplePlaylist();
+                updatePlayerInfo(currentPlaylist[0]);
+            } else {
+                showError('تعذر استخراج رابط البلايليست');
+            }
+        }
+
+        // Load Spotify embed
+        function loadSpotifyEmbed(playlistId) {
+            const embedHtml = `
+                <iframe 
+                    src="https://open.spotify.com/embed/playlist/${playlistId}" 
+                    width="100%" 
+                    height="380" 
+                    frameborder="0" 
+                    allowtransparency="true" 
+                    allow="encrypted-media"
+                    style="border-radius: 12px;">
+                </iframe>
+            `;
+            
+            spotifyPlayerContainer.innerHTML = embedHtml;
+        }
+
+        // Load sample playlist (for demo)
+        function loadSamplePlaylist() {
+            currentPlaylist = [...samplePlaylist];
+            renderPlaylist();
+        }
+
+        // Render playlist
+        function renderPlaylist() {
+            playlistItems.innerHTML = '';
+            
+            currentPlaylist.forEach((track, index) => {
+                const item = document.createElement('div');
+                item.className = `playlist-item ${index === currentTrackIndex ? 'active' : ''}`;
+                item.innerHTML = `
+                    <div class="item-number">${index + 1}</div>
+                    <div class="item-info">
+                        <div class="item-title">${track.title}</div>
+                        <div class="item-artist">${track.artist}</div>
+                    </div>
+                    <div class="item-duration">${track.duration}</div>
+                `;
+                
+                item.addEventListener('click', () => {
+                    currentTrackIndex = index;
+                    updatePlayerInfo(track);
+                    renderPlaylist();
+                    playTrack();
+                });
+                
+                playlistItems.appendChild(item);
+            });
+        }
+
+        // Update player info
+        function updatePlayerInfo(track) {
+            document.getElementById('currentTrack').textContent = track.title;
+            document.getElementById('currentArtist').textContent = track.artist;
+            
+            // Update album art (demo - using placeholder)
+            const albumArt = document.getElementById('albumArt');
+            albumArt.innerHTML = track.albumArt ? 
+                `<img src="${track.albumArt}" alt="${track.title}" style="width: 100%; height: 100%; object-fit: cover;">` :
+                `<i class="fab fa-spotify"></i>`;
+            
+            // Update progress (demo)
+            updateProgress();
+        }
+
+        // Initialize audio player (demo)
+        function initAudioPlayer() {
+            // This is a demo player
+            // In a real app, you would use Spotify Web API
+            
+            updateProgress();
+            
+            // Simulate progress
+            setInterval(() => {
+                if (isPlaying) {
+                    updateProgress();
+                }
+            }, 1000);
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const currentTime = document.getElementById('currentTime');
+            const totalTime = document.getElementById('totalTime');
+            
+            // Demo progress
+            const duration = 200; // seconds
+            const progress = isPlaying ? 
+                Math.min(((Date.now() % (duration * 1000)) / (duration * 1000)) * 100, 100) : 30;
+            
+            progressFill.style.width = `${progress}%`;
+            
+            // Format time
+            const currentSeconds = Math.floor((progress / 100) * duration);
+            currentTime.textContent = formatTime(currentSeconds);
+            totalTime.textContent = formatTime(duration);
+        }
+
+        // Format time (MM:SS)
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Toggle play/pause
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            
+            const playIcon = playBtn.querySelector('i');
+            if (isPlaying) {
+                playIcon.className = 'fas fa-pause';
+                showSuccess('جاري التشغيل...');
+            } else {
+                playIcon.className = 'fas fa-play';
+            }
+            
+            updateProgress();
+        }
+
+        // Play previous track
+        function playPrev() {
+            currentTrackIndex = (currentTrackIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+            updatePlayerInfo(currentPlaylist[currentTrackIndex]);
+            renderPlaylist();
+            playTrack();
+        }
+
+        // Play next track
+        function playNext() {
+            currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
+            updatePlayerInfo(currentPlaylist[currentTrackIndex]);
+            renderPlaylist();
+            playTrack();
+        }
+
+        // Play track
+        function playTrack() {
+            isPlaying = true;
+            const playIcon = playBtn.querySelector('i');
+            playIcon.className = 'fas fa-pause';
+            
+            showSuccess(`جاري تشغيل: ${currentPlaylist[currentTrackIndex].title}`);
+            updateProgress();
+        }
+
+        // Shuffle playlist
+        function shufflePlaylist() {
+            for (let i = currentPlaylist.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [currentPlaylist[i], currentPlaylist[j]] = [currentPlaylist[j], currentPlaylist[i]];
+            }
+            
+            // Keep current track first after shuffle
+            const currentTrack = currentPlaylist[currentTrackIndex];
+            currentPlaylist = currentPlaylist.filter((_, idx) => idx !== currentTrackIndex);
+            currentPlaylist.unshift(currentTrack);
+            currentTrackIndex = 0;
+            
+            renderPlaylist();
+            showSuccess('تم خلط القائمة');
+        }
+
+        // Update volume
+        function updateVolume() {
+            const value = volumeSlider.value;
+            volumeValue.textContent = `${value}%`;
+            
+            // In real app, set audio volume
+            if (audioPlayer) {
+                audioPlayer.volume = value / 100;
+            }
+        }
+
+        // Handle paste event
+        function handlePaste(event) {
+            setTimeout(() => {
+                const text = spotifyUrlInput.value;
+                if (text.includes('spotify.com')) {
+                    // Auto-format URL
+                    spotifyUrlInput.value = text.trim();
+                    showSuccess('تم التعرف على رابط Spotify');
+                }
+            }, 100);
+        }
+
+        // Validate Spotify URL
+        function isValidSpotifyUrl(url) {
+            return url.includes('spotify.com') && 
+                   (url.includes('/playlist/') || url.includes('/track/') || url.includes('/album/'));
+        }
+
+        // Extract playlist ID from URL
+        function extractPlaylistId(url) {
+            const match = url.match(/playlist\/([a-zA-Z0-9]+)/);
+            return match ? match[1] : null;
+        }
+
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+            
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+            
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Example URLs for testing:
+        // https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M
+        // https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT
+    </script>
+</body>
+</html>
